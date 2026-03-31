@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:submission/controller/home_controller.dart';
@@ -49,11 +50,26 @@ class _HomeBody extends StatefulWidget {
 class _HomeBodyState extends State<_HomeBody> {
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<HomeController>(context, listen: false);
+    final controller = Provider.of<HomeController>(context, listen: true);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (controller.selectedImagePath != null) ...[
+          Container(
+            margin: const EdgeInsets.only(bottom: 16.0),
+            height: 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey.shade300),
+              image: DecorationImage(
+                image: FileImage(File(controller.selectedImagePath!)),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
         Container(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
           decoration: BoxDecoration(

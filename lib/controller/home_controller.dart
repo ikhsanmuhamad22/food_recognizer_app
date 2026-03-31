@@ -1,20 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:submission/ui/result_page.dart';
 
 class HomeController extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
+  String? selectedImagePath;
+
+  Future<void> _cropImage(String imagePath, BuildContext context) async {
+    selectedImagePath = null;
+    notifyListeners();
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: imagePath,
+      compressFormat: ImageCompressFormat.jpg,
+      compressQuality: 100,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Theme.of(context).colorScheme.primary,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        IOSUiSettings(title: 'Crop Image', minimumAspectRatio: 1.0),
+      ],
+    );
+
+    if (croppedFile != null) {
+      selectedImagePath = croppedFile.path;
+      notifyListeners();
+      // Navigate to result page with cropped image
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultPage(imagePath: croppedFile.path),
+        ),
+      );
+    }
+  }
 
   Future<void> pickImageFromCamera(BuildContext context) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
-      // Navigate to result page with image
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResultPage(imagePath: image.path),
-        ),
-      );
+      await _cropImage(image.path, context);
     }
   }
 
@@ -22,13 +50,7 @@ class HomeController extends ChangeNotifier {
     print("pick image from gallery");
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      // Navigate to result page with image
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResultPage(imagePath: image.path),
-        ),
-      );
+      await _cropImage(image.path, context);
     }
   }
 
