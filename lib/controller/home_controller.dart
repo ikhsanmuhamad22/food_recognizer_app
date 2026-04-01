@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -47,7 +49,6 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> pickImageFromGallery(BuildContext context) async {
-    print("pick image from gallery");
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       await _cropImage(image.path, context);
@@ -57,7 +58,7 @@ class HomeController extends ChangeNotifier {
   void goToResultPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ResultPage()),
+      MaterialPageRoute(builder: (context) => ResultPage(imagePath: '')),
     );
   }
 }

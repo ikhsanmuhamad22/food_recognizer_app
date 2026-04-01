@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:submission/controller/home_controller.dart';
-import 'package:submission/provider/food_classification_provider.dart';
-import 'package:submission/service/food_classification_service.dart';
+import 'package:submission/provider/image_classification_provider.dart';
+import 'package:submission/service/image_classification_service.dart';
 import 'package:submission/style/main_theme.dart';
 import 'package:submission/ui/home_page.dart';
+import 'package:submission/ui/result_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
       providers: [
-        Provider(create: (context) => FoodClassificationService()),
+        Provider(create: (context) => ImageClassificationService()),
         ChangeNotifierProvider(create: (context) => HomeController()),
         ChangeNotifierProvider(
           create:
-              (context) => FoodClassificationProvider(
-                context.read<FoodClassificationService>(),
+              (context) => ImageClassificationViewmodel(
+                context.read<ImageClassificationService>(),
               ),
         ),
       ],
@@ -32,7 +34,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: MainTheme.lightTheme,
-      home: const HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+        '/result':
+            (context) => ResultPage(
+              imagePath: ModalRoute.of(context)!.settings.arguments as String?,
+            ),
+      },
     );
   }
 }

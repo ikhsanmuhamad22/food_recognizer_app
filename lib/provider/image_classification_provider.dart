@@ -1,13 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
-import 'package:submission/service/food_classification_service.dart';
+import 'package:submission/service/image_classification_service.dart';
 
 // todo-04-viewmodel-01: create a viewmodel notifier
-class FoodClassificationProvider extends ChangeNotifier {
+class ImageClassificationViewmodel extends ChangeNotifier {
   // todo-04-viewmodel-02: create a constructor
-  final FoodClassificationService _service;
+  final ImageClassificationService _service;
 
-  FoodClassificationProvider(this._service) {
+  ImageClassificationViewmodel(this._service) {
     _service.initHelper();
   }
 

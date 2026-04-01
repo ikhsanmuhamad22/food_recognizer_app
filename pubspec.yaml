@@ -28,8 +28,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-assets:
-  - assets/ml_model/
+  assets:
+    - assets/ml_model/aiy.tflite
+    - assets/ml_model/probability-labels.txt
 
 fonts:
   - family: Manrope

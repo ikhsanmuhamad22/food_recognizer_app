@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:submission/controller/home_controller.dart';
@@ -51,134 +50,67 @@ class _HomeBodyState extends State<_HomeBody> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeController>(context, listen: true);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (controller.selectedImagePath != null) ...[
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Container(
-            margin: const EdgeInsets.only(bottom: 16.0),
-            height: 180,
-            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 16.0,
+              horizontal: 32.0,
+            ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey.shade300),
-              image: DecorationImage(
-                image: FileImage(File(controller.selectedImagePath!)),
-                fit: BoxFit.cover,
-              ),
+              color: Theme.of(context).colorScheme.primary, // Background color
+              borderRadius: BorderRadius.circular(32), // Rounded corners
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'HOW TO USE',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                Text(
+                  'How Food Recognizer Works',
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                SizedBox(height: 24.0),
+
+                const HowToUseItem(
+                  number: '1',
+                  description:
+                      'Scan or upload your meal using the camera or gallery',
+                ),
+                SizedBox(height: 12.0),
+                const HowToUseItem(
+                  number: '2',
+                  description:
+                      'Crop the image to focus on the food item you want to recognize',
+                ),
+                SizedBox(height: 12.0),
+
+                const HowToUseItem(
+                  number: '3',
+                  description:
+                      'Get instant nutritinal information about your meal, including calories, carbohydrates, proteins, and fats',
+                ),
+                SizedBox(height: 12.0),
+              ],
             ),
           ),
-        ],
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary, // Background color
-            borderRadius: BorderRadius.circular(32), // Rounded corners
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+
+          SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'HOW TO USE',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-              Text(
-                'How Food Recognizer Works',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-              SizedBox(height: 24.0),
-
-              const HowToUseItem(
-                number: '1',
-                description:
-                    'Scan or upload your meal using the camera or gallery',
-              ),
-              SizedBox(height: 12.0),
-              const HowToUseItem(
-                number: '2',
-                description:
-                    'Crop the image to focus on the food item you want to recognize',
-              ),
-              SizedBox(height: 12.0),
-
-              const HowToUseItem(
-                number: '3',
-                description:
-                    'Get instant nutritinal information about your meal, including calories, carbohydrates, proteins, and fats',
-              ),
-              SizedBox(height: 12.0),
-            ],
-          ),
-        ),
-        SizedBox(height: 24.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => controller.pickImageFromCamera(context),
-                child: Container(
-                  padding: const EdgeInsets.all(24.0),
-                  decoration: BoxDecoration(
-                    color:
-                        Theme.of(
-                          context,
-                        ).colorScheme.onPrimary, // Background color
-                    borderRadius: BorderRadius.circular(32), // Rounded corners
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(
-                                context,
-                              ).colorScheme.primary, // Background color
-                          borderRadius: BorderRadius.circular(
-                            32,
-                          ), // Rounded corners
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Icon(Icons.camera, size: 34),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Scan with camera',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleLarge?.copyWith(color: Colors.black54),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => controller.pickImageFromGallery(context),
-                child: Center(
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/live-camera'),
                   child: Container(
                     padding: const EdgeInsets.all(24.0),
                     decoration: BoxDecoration(
@@ -198,6 +130,7 @@ class _HomeBodyState extends State<_HomeBody> {
                       ],
                     ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(16.0),
@@ -205,7 +138,7 @@ class _HomeBodyState extends State<_HomeBody> {
                             color:
                                 Theme.of(
                                   context,
-                                ).colorScheme.secondary, // Background color
+                                ).colorScheme.tertiary, // Background color
                             borderRadius: BorderRadius.circular(
                               32,
                             ), // Rounded corners
@@ -218,14 +151,14 @@ class _HomeBodyState extends State<_HomeBody> {
                             ],
                           ),
                           child: Icon(
-                            Icons.cloud_upload_rounded,
+                            Icons.videocam,
                             size: 34,
-                            color: Colors.black87,
+                            color: Colors.white,
                           ),
                         ),
                         SizedBox(height: 16),
                         Text(
-                          'Upload from gallery',
+                          'Camera & Crop',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(color: Colors.black54),
@@ -235,10 +168,72 @@ class _HomeBodyState extends State<_HomeBody> {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+              SizedBox(width: 16),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.pickImageFromGallery(context),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(24.0),
+                      decoration: BoxDecoration(
+                        color:
+                            Theme.of(
+                              context,
+                            ).colorScheme.onPrimary, // Background color
+                        borderRadius: BorderRadius.circular(
+                          32,
+                        ), // Rounded corners
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.secondary, // Background color
+                              borderRadius: BorderRadius.circular(
+                                32,
+                              ), // Rounded corners
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.cloud_upload_rounded,
+                              size: 34,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Upload from gallery',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
