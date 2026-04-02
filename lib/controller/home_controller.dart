@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:submission/ui/result_page.dart';
 
 class HomeController extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
@@ -32,12 +31,12 @@ class HomeController extends ChangeNotifier {
       selectedImagePath = croppedFile.path;
       notifyListeners();
       // Navigate to result page with cropped image
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResultPage(imagePath: croppedFile.path),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => ResultPage(imagePath: croppedFile.path),
+      //   ),
+      // );
     }
   }
 
@@ -56,9 +55,9 @@ class HomeController extends ChangeNotifier {
   }
 
   void goToResultPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ResultPage(imagePath: '')),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => ResultPage(imagePath: '')),
+    // );
   }
 }

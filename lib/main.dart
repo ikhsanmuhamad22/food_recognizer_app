@@ -5,6 +5,7 @@ import 'package:submission/provider/image_classification_provider.dart';
 import 'package:submission/service/image_classification_service.dart';
 import 'package:submission/style/main_theme.dart';
 import 'package:submission/ui/home_page.dart';
+import 'package:submission/ui/live_camera_page.dart';
 import 'package:submission/ui/result_page.dart';
 
 void main() {
@@ -34,13 +35,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: MainTheme.lightTheme,
-      initialRoute: '/',
+      initialRoute: '/result',
       routes: {
         '/': (context) => const HomePage(),
-        '/result':
-            (context) => ResultPage(
-              imagePath: ModalRoute.of(context)!.settings.arguments as String?,
-            ),
+        '/live_camera': (context) => const LiveCameraPage(),
+        '/result': (context) => ResultPage(),
       },
     );
   }

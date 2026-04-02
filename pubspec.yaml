@@ -30,7 +30,8 @@ flutter:
 
   assets:
     - assets/ml_model/aiy.tflite
-    - assets/ml_model/probability-labels.txt
+    - assets/ml_model/probability-labels-en.txt
+    - assets/rendang.png
 
 fonts:
   - family: Manrope

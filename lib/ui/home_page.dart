@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'Food Recognizer App',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -105,12 +105,13 @@ class _HomeBodyState extends State<_HomeBody> {
           ),
 
           SizedBox(height: 16),
-          Row(
+          Flex(
+            direction: Axis.horizontal,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/live-camera'),
+                  onTap: () => Navigator.pushNamed(context, '/live_camera'),
                   child: Container(
                     padding: const EdgeInsets.all(24.0),
                     decoration: BoxDecoration(
@@ -158,7 +159,7 @@ class _HomeBodyState extends State<_HomeBody> {
                         ),
                         SizedBox(height: 16),
                         Text(
-                          'Camera & Crop',
+                          'Scan with camera',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(color: Colors.black54),
