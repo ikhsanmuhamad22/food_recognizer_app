@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:food_recognition_app/controller/home_controller.dart';
 import 'package:food_recognition_app/provider/image_classification_provider.dart';
-import 'package:food_recognition_app/service/image_classification_service.dart';
 import 'package:food_recognition_app/widget/camera_view.dart';
 import 'package:food_recognition_app/widget/classification_item.dart';
 

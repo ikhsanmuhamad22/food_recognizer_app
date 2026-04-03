@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:food_recognition_app/env/env.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -50,20 +51,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDlu-qVJDL7HfTibZMvN0KGg2ulNKn6PDA',
-    appId: '1:905618055532:android:9d56fafde427ff4fa69349',
+    apiKey: Env.firebaseApiKey,
+    appId: Env.firebaseAppId,
     messagingSenderId: '905618055532',
     projectId: 'food-recognize-dicoding',
     storageBucket: 'food-recognize-dicoding.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCY4ZGqWglWxAMktZp8sPc7TYrrRDl2DSU',
-    appId: '1:905618055532:ios:cdf92b2988b158e6a69349',
+    apiKey: Env.firebaseApiKey,
+    appId: Env.firebaseAppId,
     messagingSenderId: '905618055532',
     projectId: 'food-recognize-dicoding',
     storageBucket: 'food-recognize-dicoding.firebasestorage.app',
     iosBundleId: 'com.dicoding.flutter.758.foodrecognitionapp',
   );
-
 }
