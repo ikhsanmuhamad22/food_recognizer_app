@@ -35,9 +35,10 @@ class ImageClassificationViewmodel extends ChangeNotifier {
   );
 
   Future<void> runClassification(CameraImage camera) async {
-    print('Running classification on camera image...');
+    if (!_isInitialized) {
+      await _initialize();
+    }
     _classifications = await _service.inferenceCameraFrame(camera);
-    print('Classification result: $_classifications');
     notifyListeners();
   }
 

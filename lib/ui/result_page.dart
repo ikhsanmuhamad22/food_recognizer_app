@@ -14,6 +14,7 @@ class ResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'Result Page',
@@ -43,6 +44,7 @@ class _ResultBodyState extends State<_ResultBody> {
   void initState() {
     super.initState();
     readViewmodel = context.read<ImageClassificationViewmodel>();
+    print('Received image path: ${widget.imagePath}');
     if (widget.imagePath.isNotEmpty) {
       readViewmodel.runClassificationFromPath(widget.imagePath);
     }
@@ -200,6 +202,20 @@ class _ResultBodyState extends State<_ResultBody> {
                       ],
                     ),
                   ],
+                ),
+                SizedBox(height: 24),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      readViewmodel.close();
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/',
+                        (route) => false,
+                      );
+                    },
+                    child: const Text('Back to Home'),
+                  ),
                 ),
               ],
             );

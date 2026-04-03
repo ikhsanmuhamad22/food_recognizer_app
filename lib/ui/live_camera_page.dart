@@ -31,30 +31,19 @@ class _LiveCameraPageState extends State<LiveCameraPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Image Classification App'),
       ),
-      // body: ColoredBox(
-      //   color: Colors.black,
-      //   child: Center(
-      //     child: MultiProvider(
-      //       providers: [
-      //         Provider(create: (context) => ImageClassificationService()),
-      //         ChangeNotifierProvider(
-      //           create:
-      //               (context) => ImageClassificationViewmodel(
-      //                 context.read<ImageClassificationService>(),
-      //               ),
-      //         ),
-      //       ],
-      //       child: _LiveCameraBody(
-      //         onTakePicture: (takePictureFunc) {
-      //           setState(() {
-      //             takePicture = takePictureFunc;
-      //             isCameraReady = true;
-      //           });
-      //         },
-      //       ),
-      //     ),
-      //   ),
-      // ),
+      body: ColoredBox(
+        color: Colors.black,
+        child: Center(
+          child: _LiveCameraBody(
+            onTakePicture: (takePictureFunc) {
+              setState(() {
+                takePicture = takePictureFunc;
+                isCameraReady = true;
+              });
+            },
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed:
             isCameraReady

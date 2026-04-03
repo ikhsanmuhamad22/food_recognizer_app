@@ -17,6 +17,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        Provider(create: (context) => FirebaseMlService()),
         Provider(
           create:
               (context) =>

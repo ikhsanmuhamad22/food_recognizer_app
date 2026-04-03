@@ -26,7 +26,7 @@ class ImageClassificationService {
 
   Future<void> _loadModel() async {
     modelFile = await _mlService.loadModel();
-    if (interpreter != null) return; // Already loaded
+    if (interpreter != null) return;
     final options =
         InterpreterOptions()
           ..useNnApiForAndroid = true
