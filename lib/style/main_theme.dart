@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:submission/style/main_text_style.dart';
+import 'package:food_recognition_app/style/main_text_style.dart';
 
 class MainTheme {
   static AppBarTheme get _appBarTheme =>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "905618055532",
+    "project_id": "food-recognize-dicoding",
+    "storage_bucket": "food-recognize-dicoding.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905618055532:android:9d56fafde427ff4fa69349",
+        "android_client_info": {
+          "package_name": "food.recognize.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlu-qVJDL7HfTibZMvN0KGg2ulNKn6PDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

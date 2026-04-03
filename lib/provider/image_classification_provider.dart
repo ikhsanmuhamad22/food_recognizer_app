@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
-import 'package:submission/service/image_classification_service.dart';
+import 'package:food_recognition_app/service/image_classification_service.dart';
 
 class ImageClassificationViewmodel extends ChangeNotifier {
   final ImageClassificationService _service;

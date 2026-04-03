@@ -1,4 +1,4 @@
-name: submission
+name: food_recognition_app
 description: "A new Flutter project."
 
 publish_to: "none"
@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   camera: ^0.12.0+1
+  firebase_core: ^4.6.0
+  firebase_ml_model_downloader: ^0.4.1
   flutter:
     sdk: flutter
 
@@ -31,7 +33,6 @@ flutter:
   assets:
     - assets/ml_model/1.tflite
     - assets/ml_model/probability-labels-en.txt
-    - assets/rendang.png
 
 fonts:
   - family: Manrope

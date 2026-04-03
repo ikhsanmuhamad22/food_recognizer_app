@@ -1,24 +1,33 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:food_recognition_app/firebase_options.dart';
+import 'package:food_recognition_app/service/firebase_ml_service.dart';
 import 'package:provider/provider.dart';
-import 'package:submission/controller/home_controller.dart';
-import 'package:submission/provider/image_classification_provider.dart';
-import 'package:submission/service/image_classification_service.dart';
-import 'package:submission/style/main_theme.dart';
-import 'package:submission/ui/home_page.dart';
-import 'package:submission/ui/live_camera_page.dart';
-import 'package:submission/ui/result_page.dart';
+import 'package:food_recognition_app/controller/home_controller.dart';
+import 'package:food_recognition_app/provider/image_classification_provider.dart';
+import 'package:food_recognition_app/service/image_classification_service.dart';
+import 'package:food_recognition_app/style/main_theme.dart';
+import 'package:food_recognition_app/ui/home_page.dart';
+import 'package:food_recognition_app/ui/live_camera_page.dart';
+import 'package:food_recognition_app/ui/result_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
       providers: [
-        Provider(create: (context) => ImageClassificationService()),
+        Provider(
+          create:
+              (context) =>
+                  ImageClassificationService(context.read<FirebaseMlService>()),
+        ),
         ChangeNotifierProvider(create: (context) => HomeController()),
         ChangeNotifierProvider(
-          create: (context) => ImageClassificationViewmodel(
-            context.read<ImageClassificationService>(),
-          ),
+          create:
+              (context) => ImageClassificationViewmodel(
+                context.read<ImageClassificationService>(),
+              ),
         ),
       ],
       child: const MyApp(),
@@ -38,9 +47,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),
         '/live_camera': (context) => LiveCameraPage(),
-        '/result': (context) => ResultPage(
-          imagePath: ModalRoute.of(context)!.settings.arguments as String,
-        ),
+        '/result':
+            (context) => ResultPage(
+              imagePath: ModalRoute.of(context)!.settings.arguments as String,
+            ),
       },
     );
   }

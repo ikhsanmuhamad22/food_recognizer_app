@@ -1,4 +1,4 @@
-package com.dicoding.flutter.u758.submission
+package food.recognize.app
 
 import io.flutter.embedding.android.FlutterActivity
 

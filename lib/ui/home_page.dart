@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:submission/controller/home_controller.dart';
-import 'package:submission/widget/how_to_use_item.dart';
+import 'package:food_recognition_app/controller/home_controller.dart';
+import 'package:food_recognition_app/widget/how_to_use_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

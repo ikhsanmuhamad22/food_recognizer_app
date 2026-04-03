@@ -145,6 +145,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+5"
+  firebase_core:
+    dependency: "direct main"
+    description:
+      name: firebase_core
+      sha256: "2f988dab915efde3b3105268dbd69efce0e8570d767a218ccd914afd0c10c8cc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.0"
+  firebase_core_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_core_platform_interface
+      sha256: "0ecda14c1bfc9ed8cac303dd0f8d04a320811b479362a9a4efb14fd331a473ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.3"
+  firebase_core_web:
+    dependency: transitive
+    description:
+      name: firebase_core_web
+      sha256: "1399ab1f0ac3b503d8a9be64a4c997fc066bbf33f701f42866e5569f26205ebe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.1"
+  firebase_ml_model_downloader:
+    dependency: "direct main"
+    description:
+      name: firebase_ml_model_downloader
+      sha256: f7afe686008d9c175e4430b9275f9e92d01751a5d3cfa122e172ce8eecb050a3
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
+  firebase_ml_model_downloader_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_ml_model_downloader_platform_interface
+      sha256: "7f48a9f3ed7fb979552f4c8021db67d54d3ce6e3bcbcd251d017208e1febfeba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5+19"
   flutter:
     dependency: "direct main"
     description: flutter

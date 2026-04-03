@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:submission/ui/result_page.dart';
+import 'package:food_recognition_app/ui/result_page.dart';
 
 class HomeController extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:submission/data/model/food_model.dart';
-import 'package:submission/provider/image_classification_provider.dart';
+import 'package:food_recognition_app/data/model/food_model.dart';
+import 'package:food_recognition_app/provider/image_classification_provider.dart';
 
 class ResultPage extends StatelessWidget {
   final String imagePath;
