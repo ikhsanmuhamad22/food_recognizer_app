@@ -29,7 +29,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/ml_model/aiy.tflite
+    - assets/ml_model/1.tflite
     - assets/ml_model/probability-labels-en.txt
     - assets/rendang.png
 

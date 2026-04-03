@@ -16,10 +16,9 @@ void main() {
         Provider(create: (context) => ImageClassificationService()),
         ChangeNotifierProvider(create: (context) => HomeController()),
         ChangeNotifierProvider(
-          create:
-              (context) => ImageClassificationViewmodel(
-                context.read<ImageClassificationService>(),
-              ),
+          create: (context) => ImageClassificationViewmodel(
+            context.read<ImageClassificationService>(),
+          ),
         ),
       ],
       child: const MyApp(),
@@ -33,13 +32,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Food Recognizer App',
       theme: MainTheme.lightTheme,
-      initialRoute: '/result',
+      initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
-        '/live_camera': (context) => const LiveCameraPage(),
-        '/result': (context) => ResultPage(),
+        '/live_camera': (context) => LiveCameraPage(),
+        '/result': (context) => ResultPage(
+          imagePath: ModalRoute.of(context)!.settings.arguments as String,
+        ),
       },
     );
   }

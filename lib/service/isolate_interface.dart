@@ -7,16 +7,13 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 import '../utils/image_utils.dart';
 
-// todo-03-isolate-02: create a class isolate
 class IsolateInference {
-  // todo-03-isolate-03: setup a state
   static const String _debugName = "TFLITE_INFERENCE";
   final ReceivePort _receivePort = ReceivePort();
   late Isolate _isolate;
   late SendPort _sendPort;
   SendPort get sendPort => _sendPort;
 
-  // todo-03-isolate-04: open the new thread and create a static function
   Future<void> start() async {
     _isolate = await Isolate.spawn<SendPort>(
       entryPoint,
@@ -48,7 +45,6 @@ class IsolateInference {
             isolateModel.interpreterAddress,
           );
         } else if (isolateModel.isFileMode) {
-          // File inference path
           final bytes = isolateModel.imageBytes!;
           final imageMatrix = _imagePreProcessingFromBytes(
             bytes,
@@ -68,7 +64,6 @@ class IsolateInference {
           );
         }
 
-        // Result preparation
         int maxScore = result.reduce((a, b) => a + b);
         final keys = isolateModel.labels;
         final values =
@@ -85,7 +80,6 @@ class IsolateInference {
     }
   }
 
-  // todo-03-isolate-09: close every thread that might be open
   Future<void> close() async {
     _isolate.kill();
     _receivePort.close();
@@ -129,7 +123,6 @@ class IsolateInference {
       throw Exception('Failed to decode image from bytes');
     }
 
-    // Resize to model input shape
     final imageInput = image_lib.copyResize(
       img,
       width: inputShape[1],
@@ -153,13 +146,11 @@ class IsolateInference {
   ) {
     Interpreter interpreter = Interpreter.fromAddress(interpreterAddress);
     interpreter.run(input, output);
-    // Get first output tensor
     final result = output.first;
     return result;
   }
 }
 
-// todo-03-isolate-01: create a model class
 class InferenceModel {
   CameraImage? cameraImage;
   Uint8List? imageBytes;

@@ -34,10 +34,9 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: false,
-      imageFormatGroup:
-          Platform.isAndroid
-              ? ImageFormatGroup.yuv420
-              : ImageFormatGroup.bgra8888,
+      imageFormatGroup: Platform.isAndroid
+          ? ImageFormatGroup.yuv420
+          : ImageFormatGroup.bgra8888,
     );
     await previousCameraController?.dispose();
 
@@ -56,6 +55,9 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                 );
               }
               _isCameraInitialized = controller!.value.isInitialized;
+              if (widget.onTakePicture != null) {
+                widget.onTakePicture!(takePicture);
+              }
             });
           }
         })
@@ -89,7 +91,6 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
         final XFile file = await controller!.takePicture();
         return file;
       } catch (e) {
-        print('Error taking picture: $e');
         return null;
       }
     }
@@ -101,11 +102,6 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     initCamera();
-
-    // Notify parent about takePicture function
-    if (widget.onTakePicture != null) {
-      widget.onTakePicture!(takePicture);
-    }
 
     super.initState();
   }

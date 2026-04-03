@@ -3,12 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:submission/ui/result_page.dart';
 
 class HomeController extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
   String? selectedImagePath;
 
-  Future<void> _cropImage(String imagePath, BuildContext context) async {
+  Future<void> cropImage(String imagePath, BuildContext context) async {
     selectedImagePath = null;
     notifyListeners();
     final croppedFile = await ImageCropper().cropImage(
@@ -30,34 +31,26 @@ class HomeController extends ChangeNotifier {
     if (croppedFile != null) {
       selectedImagePath = croppedFile.path;
       notifyListeners();
-      // Navigate to result page with cropped image
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => ResultPage(imagePath: croppedFile.path),
-      //   ),
-      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultPage(imagePath: croppedFile.path),
+        ),
+      );
     }
   }
 
   Future<void> pickImageFromCamera(BuildContext context) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
-      await _cropImage(image.path, context);
+      await cropImage(image.path, context);
     }
   }
 
   Future<void> pickImageFromGallery(BuildContext context) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      await _cropImage(image.path, context);
+      await cropImage(image.path, context);
     }
-  }
-
-  void goToResultPage(BuildContext context) {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => ResultPage(imagePath: '')),
-    // );
   }
 }

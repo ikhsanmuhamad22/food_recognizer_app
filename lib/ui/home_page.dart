@@ -172,7 +172,9 @@ class _HomeBodyState extends State<_HomeBody> {
               SizedBox(width: 16),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => controller.pickImageFromGallery(context),
+                  onTap: () async {
+                    controller.pickImageFromGallery(context);
+                  },
                   child: Center(
                     child: Container(
                       padding: const EdgeInsets.all(24.0),

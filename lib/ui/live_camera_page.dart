@@ -1,15 +1,29 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:submission/controller/home_controller.dart';
 import 'package:submission/provider/image_classification_provider.dart';
 import 'package:submission/service/image_classification_service.dart';
 import 'package:submission/widget/camera_view.dart';
 import 'package:submission/widget/classification_item.dart';
-import 'package:submission/ui/result_page.dart';
 
-class LiveCameraPage extends StatelessWidget {
+class LiveCameraPage extends StatefulWidget {
   const LiveCameraPage({super.key});
+
+  @override
+  State<LiveCameraPage> createState() => _LiveCameraPageState();
+}
+
+class _LiveCameraPageState extends State<LiveCameraPage> {
+  late HomeController controller;
+  late Future<XFile?> Function() takePicture;
+  bool isCameraReady = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    controller = Provider.of<HomeController>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +35,6 @@ class LiveCameraPage extends StatelessWidget {
       body: ColoredBox(
         color: Colors.black,
         child: Center(
-          // todo-05-ui-01: inject all classes
           child: MultiProvider(
             providers: [
               Provider(create: (context) => ImageClassificationService()),
@@ -32,19 +45,28 @@ class LiveCameraPage extends StatelessWidget {
                     ),
               ),
             ],
-            child: _LiveCameraBody(),
+            child: _LiveCameraBody(
+              onTakePicture: (takePictureFunc) {
+                setState(() {
+                  takePicture = takePictureFunc;
+                  isCameraReady = true;
+                });
+              },
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // Capture image logic will be handled in _LiveCameraBody
-          final bodyState =
-              context.findAncestorStateOfType<_LiveCameraBodyState>();
-          if (bodyState != null) {
-            await bodyState.captureAndProcessImage(context);
-          }
-        },
+        onPressed:
+            isCameraReady
+                ? () async {
+                  final file = await takePicture();
+                  if (file != null) {
+                    controller.selectedImagePath = file.path;
+                    controller.cropImage(file.path, context);
+                  }
+                }
+                : null,
         child: const Icon(Icons.camera),
       ),
     );
@@ -52,58 +74,21 @@ class LiveCameraPage extends StatelessWidget {
 }
 
 class _LiveCameraBody extends StatefulWidget {
-  const _LiveCameraBody();
+  final Function(Future<XFile?> Function()) onTakePicture;
+
+  const _LiveCameraBody({required this.onTakePicture});
 
   @override
   State<_LiveCameraBody> createState() => _LiveCameraBodyState();
 }
 
 class _LiveCameraBodyState extends State<_LiveCameraBody> {
-  // todo-05-ui-03: setup the provider and dispose it after using it
   late final readViewmodel = context.read<ImageClassificationViewmodel>();
-  Future<XFile?> Function()? _takePicture;
 
   @override
   void dispose() {
     Future.microtask(() async => await readViewmodel.close());
     super.dispose();
-  }
-
-  Future<void> captureAndProcessImage(BuildContext context) async {
-    if (_takePicture != null) {
-      final XFile? imageFile = await _takePicture!();
-      if (imageFile != null) {
-        // Crop the image
-        final croppedFile = await ImageCropper().cropImage(
-          sourcePath: imageFile.path,
-          compressFormat: ImageCompressFormat.jpg,
-          compressQuality: 100,
-          uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: 'Crop Image',
-              toolbarColor: Theme.of(context).colorScheme.primary,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false,
-            ),
-            IOSUiSettings(title: 'Crop Image', minimumAspectRatio: 1.0),
-          ],
-        );
-
-        if (croppedFile != null) {
-          // Run classification on the cropped image
-          await readViewmodel.runClassificationFromPath(croppedFile.path);
-
-          // Navigate to result page
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ResultPage(),
-            ),
-          );
-        }
-      }
-    }
   }
 
   @override
@@ -114,9 +99,7 @@ class _LiveCameraBodyState extends State<_LiveCameraBody> {
           onImage: (cameraImage) async {
             await readViewmodel.runClassification(cameraImage);
           },
-          onTakePicture: (takePictureFunc) {
-            _takePicture = takePictureFunc;
-          },
+          onTakePicture: widget.onTakePicture,
         ),
         Positioned(
           bottom: 0,
@@ -125,7 +108,6 @@ class _LiveCameraBodyState extends State<_LiveCameraBody> {
           child: Consumer<ImageClassificationViewmodel>(
             builder: (_, updateViewmodel, __) {
               final classifications = updateViewmodel.classifications.entries;
-
               if (classifications.isEmpty) {
                 return const SizedBox.shrink();
               }

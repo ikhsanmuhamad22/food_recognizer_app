@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:submission/data/model/food_model.dart';
+import 'package:submission/provider/image_classification_provider.dart';
 
 class ResultPage extends StatelessWidget {
-  const ResultPage({super.key});
+  final String imagePath;
+
+  const ResultPage({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +22,34 @@ class ResultPage extends StatelessWidget {
           ),
         ),
       ),
-      body: SafeArea(child: _ResultBody()),
+      body: SafeArea(child: _ResultBody(imagePath: imagePath)),
     );
   }
 }
 
-class _ResultBody extends StatelessWidget {
-  const _ResultBody();
+class _ResultBody extends StatefulWidget {
+  final String imagePath;
+
+  const _ResultBody({required this.imagePath});
+
+  @override
+  State<_ResultBody> createState() => _ResultBodyState();
+}
+
+class _ResultBodyState extends State<_ResultBody> {
+  late final ImageClassificationViewmodel readViewmodel;
+
+  @override
+  void initState() {
+    super.initState();
+    readViewmodel = context.read<ImageClassificationViewmodel>();
+    if (widget.imagePath.isNotEmpty) {
+      readViewmodel.runClassificationFromPath(widget.imagePath);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final confidence = 0.85;
     final Food data = Food(
       foodName: 'Nasi Goreng',
       nutrition: Nutrition(
@@ -41,142 +64,146 @@ class _ResultBody extends StatelessWidget {
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 220,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    'assets/rendang.png',
-                  ), // bisa diganti dengan FileImage atau NetworkImage
-                  fit: BoxFit.cover,
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Stack(
-                children: [
-                  // Gradient agar teks lebih terbaca
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withOpacity(0.4),
-                            Colors.transparent,
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
+        child: Consumer<ImageClassificationViewmodel>(
+          builder: (context, viewmodel, child) {
+            if (viewmodel.classifications.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
-                  // Teks label dan confidence
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          data.foodName,
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(color: Colors.white),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
-                          ),
+              children: [
+                Container(
+                  height: 220,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: Image.file(File(widget.imagePath)).image,
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Stack(
+                    children: [
+                      // Gradient agar teks lebih terbaca
+                      Positioned.fill(
+                        child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
+                            gradient: LinearGradient(
+                              colors: [Colors.black54, Colors.transparent],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.check,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+
+                      // Teks label dan confidence
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              viewmodel.classifications.keys.first,
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(color: Colors.white),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${(confidence * 100).toStringAsFixed(0)}% Confidence',
-                                style: const TextStyle(color: Colors.white),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                            ],
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${(viewmodel.classifications.values.first * 100).toStringAsFixed(0)}% Confidence',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Nutrition Breakdown',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(color: Colors.black54),
+                ),
+
+                const SizedBox(height: 12),
+                Flex(
+                  direction: Axis.vertical,
+                  children: [
+                    // Baris atas
+                    Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        Expanded(
+                          child: _nutrientBox(
+                            '🔥',
+                            data.nutrition.kalories.toString(),
+                            'Calories (kcal)',
+                            Colors.orange,
+                          ),
+                        ),
+                        Expanded(
+                          child: _nutrientBox(
+                            '💪',
+                            data.nutrition.protein.toString(),
+                            'Protein',
+                            Colors.green,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Nutrition Breakdown',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: Colors.black54),
-            ),
-
-            const SizedBox(height: 12),
-            Flex(
-              direction: Axis.vertical,
-              children: [
-                // Baris atas
-                Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    Expanded(
-                      child: _nutrientBox(
-                        '🔥',
-                        data.nutrition.kalories.toString(),
-                        'Calories (kcal)',
-                        Colors.orange,
-                      ),
-                    ),
-                    Expanded(
-                      child: _nutrientBox(
-                        '💪',
-                        data.nutrition.protein.toString(),
-                        'Protein',
-                        Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-                // Baris bawah
-                Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    Expanded(
-                      child: _nutrientBox(
-                        '🥐',
-                        data.nutrition.carbs.toString(),
-                        'Carbs',
-                        Colors.amber,
-                      ),
-                    ),
-                    Expanded(
-                      child: _nutrientBox(
-                        '💧',
-                        data.nutrition.fat.toString(),
-                        'Total Fats',
-                        Colors.brown,
-                      ),
+                    // Baris bawah
+                    Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        Expanded(
+                          child: _nutrientBox(
+                            '🥐',
+                            data.nutrition.carbs.toString(),
+                            'Carbs',
+                            Colors.amber,
+                          ),
+                        ),
+                        Expanded(
+                          child: _nutrientBox(
+                            '💧',
+                            data.nutrition.fat.toString(),
+                            'Total Fats',
+                            Colors.brown,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
