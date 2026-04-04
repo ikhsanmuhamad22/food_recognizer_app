@@ -2,13 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:food_recognition_app/firebase_options.dart';
 import 'package:food_recognition_app/service/firebase_ml_service.dart';
+import 'package:food_recognition_app/service/gemini_service.dart';
 import 'package:provider/provider.dart';
 import 'package:food_recognition_app/controller/home_controller.dart';
 import 'package:food_recognition_app/provider/image_classification_provider.dart';
 import 'package:food_recognition_app/service/image_classification_service.dart';
 import 'package:food_recognition_app/style/main_theme.dart';
 import 'package:food_recognition_app/ui/home_page.dart';
-import 'package:food_recognition_app/ui/live_camera_page.dart';
 import 'package:food_recognition_app/ui/result_page.dart';
 
 void main() async {
@@ -23,6 +23,7 @@ void main() async {
               (context) =>
                   ImageClassificationService(context.read<FirebaseMlService>()),
         ),
+        Provider(create: (context) => GeminiService()),
         ChangeNotifierProvider(create: (context) => HomeController()),
         ChangeNotifierProvider(
           create:
@@ -47,7 +48,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
-        '/live_camera': (context) => LiveCameraPage(),
         '/result':
             (context) => ResultPage(
               imagePath: ModalRoute.of(context)!.settings.arguments as String,

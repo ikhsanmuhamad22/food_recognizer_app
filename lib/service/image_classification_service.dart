@@ -22,17 +22,17 @@ class ImageClassificationService {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
-  late final File modelFile;
+  File? modelFile;
 
   Future<void> _loadModel() async {
-    modelFile = await _mlService.loadModel();
     if (interpreter != null) return;
+    final file = modelFile ??= await _mlService.loadModel();
     final options =
         InterpreterOptions()
           ..useNnApiForAndroid = true
           ..useMetalDelegateForIOS = true;
 
-    interpreter = Interpreter.fromFile(modelFile, options: options);
+    interpreter = Interpreter.fromFile(file, options: options);
     inputTensor = interpreter!.getInputTensors().first;
     outputTensor = interpreter!.getOutputTensors().first;
 
@@ -40,7 +40,7 @@ class ImageClassificationService {
   }
 
   Future<void> _loadLabels() async {
-    if (labels != null) return; // Already loaded
+    if (labels != null) return;
     final labelTxt = await rootBundle.loadString(labelsPath);
     labels = labelTxt.split('\n');
   }
@@ -112,7 +112,7 @@ class ImageClassificationService {
       final bytes = await imageFile.readAsBytes();
 
       var isolateModel = InferenceModel(
-        null, // no cameraImage, just bytes
+        null,
         interpreter!.address,
         labels!,
         inputTensor!.shape,
@@ -121,6 +121,7 @@ class ImageClassificationService {
       isolateModel.imageBytes = bytes;
 
       ReceivePort responsePort = ReceivePort();
+
       isolateModel.responsePort = responsePort.sendPort;
       isolateInference!.sendPort.send(isolateModel);
 

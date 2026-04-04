@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:food_recognition_app/service/gemini_service.dart';
 import 'package:provider/provider.dart';
 import 'package:food_recognition_app/data/model/food_model.dart';
 import 'package:food_recognition_app/provider/image_classification_provider.dart';
@@ -44,7 +45,6 @@ class _ResultBodyState extends State<_ResultBody> {
   void initState() {
     super.initState();
     readViewmodel = context.read<ImageClassificationViewmodel>();
-    print('Received image path: ${widget.imagePath}');
     if (widget.imagePath.isNotEmpty) {
       readViewmodel.runClassificationFromPath(widget.imagePath);
     }
@@ -52,17 +52,6 @@ class _ResultBodyState extends State<_ResultBody> {
 
   @override
   Widget build(BuildContext context) {
-    final Food data = Food(
-      foodName: 'Nasi Goreng',
-      nutrition: Nutrition(
-        kalories: 200,
-        carbs: 30,
-        protein: 5,
-        fat: 10,
-        fiber: 2,
-      ),
-    );
-
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -154,65 +143,84 @@ class _ResultBodyState extends State<_ResultBody> {
                 ),
 
                 const SizedBox(height: 12),
-                Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    // Baris atas
-                    Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        Expanded(
-                          child: _nutrientBox(
-                            '🔥',
-                            data.nutrition.kalories.toString(),
-                            'Calories (kcal)',
-                            Colors.orange,
-                          ),
-                        ),
-                        Expanded(
-                          child: _nutrientBox(
-                            '💪',
-                            data.nutrition.protein.toString(),
-                            'Protein',
-                            Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // Baris bawah
-                    Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        Expanded(
-                          child: _nutrientBox(
-                            '🥐',
-                            data.nutrition.carbs.toString(),
-                            'Carbs',
-                            Colors.amber,
-                          ),
-                        ),
-                        Expanded(
-                          child: _nutrientBox(
-                            '💧',
-                            data.nutrition.fat.toString(),
-                            'Total Fats',
-                            Colors.brown,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                Consumer<GeminiService>(
+                  builder: (context, geminiService, child) {
+                    return FutureBuilder<Nutrition>(
+                      future: geminiService.generateCommands(
+                        viewmodel.classifications.keys.first,
+                      ),
+                      builder: (context, snapshot) {
+                        print("snapshot: $snapshot");
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          final Nutrition response = snapshot.data!;
+                          print("response: $response");
+                          return Flex(
+                            direction: Axis.vertical,
+                            children: [
+                              // Baris atas
+                              Flex(
+                                direction: Axis.horizontal,
+                                children: [
+                                  Expanded(
+                                    child: _nutrientBox(
+                                      '🔥',
+                                      response.calories.toString(),
+                                      'Calories (kcal)',
+                                      Colors.orange,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _nutrientBox(
+                                      '💪',
+                                      response.protein.toString(),
+                                      'Protein',
+                                      Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Baris bawah
+                              Flex(
+                                direction: Axis.horizontal,
+                                children: [
+                                  Expanded(
+                                    child: _nutrientBox(
+                                      '🥐',
+                                      response.carbs.toString(),
+                                      'Carbs',
+                                      Colors.amber,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _nutrientBox(
+                                      '💧',
+                                      response.fat.toString(),
+                                      'Total Fats',
+                                      Colors.brown,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    );
+                  },
                 ),
                 SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
                       readViewmodel.close();
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        '/',
-                        (route) => false,
-                      );
+                      Navigator.pop(context);
                     },
                     child: const Text('Back to Home'),
                   ),

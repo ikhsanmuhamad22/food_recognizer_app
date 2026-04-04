@@ -111,7 +111,9 @@ class _HomeBodyState extends State<_HomeBody> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/live_camera'),
+                  onTap: () async {
+                    controller.pickImageFromCamera(context);
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(24.0),
                     decoration: BoxDecoration(

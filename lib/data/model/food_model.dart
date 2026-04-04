@@ -16,14 +16,14 @@ class Food {
 }
 
 class Nutrition {
-  int kalories;
+  int calories;
   int carbs;
   int protein;
   int fat;
   int fiber;
 
   Nutrition({
-    required this.kalories,
+    required this.calories,
     required this.carbs,
     required this.protein,
     required this.fat,
@@ -31,18 +31,18 @@ class Nutrition {
   });
 
   factory Nutrition.fromJson(Map<String, dynamic> json) => Nutrition(
-    kalories: json["kalories"],
+    calories: json["calories"],
     carbs: json["carbs"],
     protein: json["protein"],
-    fat: json["fat"],
+    fat: json["fats"],
     fiber: json["fiber"],
   );
 
   Map<String, dynamic> toJson() => {
-    "kalories": kalories,
+    "calories": calories,
     "carbs": carbs,
     "protein": protein,
-    "fat": fat,
+    "fats": fat,
     "fiber": fiber,
   };
 }
