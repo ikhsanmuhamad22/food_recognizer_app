@@ -167,25 +167,12 @@ class _ResultBodyState extends State<_ResultBody> {
                                       Colors.brown,
                                     ),
                                   ),
-                                ],
-                              ),
-                              Flex(
-                                direction: Axis.horizontal,
-                                children: [
                                   Expanded(
                                     child: nutrientBox(
                                       '🌾',
                                       response.fiber.toString(),
                                       'Fiber',
                                       Colors.blueGrey,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: nutrientBox(
-                                      '💧',
-                                      response.fat.toString(),
-                                      'Total Fats',
-                                      Colors.brown,
                                     ),
                                   ),
                                 ],
