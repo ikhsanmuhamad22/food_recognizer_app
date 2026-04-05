@@ -1,9 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:food_recognition_app/provider/reference_meal_provider.dart';
+import 'package:food_recognition_app/service/firebase_ml_service.dart';
 import 'package:food_recognition_app/service/gemini_service.dart';
+import 'package:food_recognition_app/service/image_classification_service.dart';
 import 'package:food_recognition_app/ui/reference_detail_page.dart';
+import 'package:food_recognition_app/widget/custem_image_widget.dart';
+import 'package:food_recognition_app/widget/nutrition_box.dart';
 import 'package:provider/provider.dart';
 import 'package:food_recognition_app/data/model/food.dart';
 import 'package:food_recognition_app/provider/image_classification_provider.dart';
@@ -26,7 +28,24 @@ class ResultPage extends StatelessWidget {
           ),
         ),
       ),
-      body: SafeArea(child: _ResultBody(imagePath: imagePath)),
+
+      body: MultiProvider(
+        providers: [
+          Provider(
+            create:
+                (context) => ImageClassificationService(
+                  context.read<FirebaseMlService>(),
+                ),
+          ),
+          ChangeNotifierProvider(
+            create:
+                (context) => ImageClassificationViewmodel(
+                  context.read<ImageClassificationService>(),
+                ),
+          ),
+        ],
+        child: SafeArea(child: _ResultBody(imagePath: imagePath)),
+      ),
     );
   }
 }
@@ -59,7 +78,8 @@ class _ResultBodyState extends State<_ResultBody> {
         padding: EdgeInsets.all(16),
         child: Consumer<ImageClassificationViewmodel>(
           builder: (context, viewmodel, child) {
-            if (viewmodel.classifications.isEmpty) {
+            final data = viewmodel.classifications;
+            if (data.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -75,75 +95,8 @@ class _ResultBodyState extends State<_ResultBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-                Container(
-                  height: 220,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: Image.file(File(widget.imagePath)).image,
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Stack(
-                    children: [
-                      // Gradient agar teks lebih terbaca
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.black54, Colors.transparent],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                      ),
+                CustomImageWidget(data: data, image: widget.imagePath),
 
-                      // Teks label dan confidence
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              viewmodel.classifications.keys.first,
-                              style: Theme.of(context).textTheme.headlineMedium
-                                  ?.copyWith(color: Colors.white),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.check,
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${(viewmodel.classifications.values.first * 100).toStringAsFixed(0)}% Confidence',
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 24),
                 Text(
                   'Nutrition Breakdown',
@@ -166,7 +119,7 @@ class _ResultBodyState extends State<_ResultBody> {
                             child: CircularProgressIndicator(),
                           );
                         } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
+                          return Text('failed to load nutrition data');
                         } else {
                           final Nutrition response = snapshot.data!;
                           return Flex(
@@ -177,7 +130,7 @@ class _ResultBodyState extends State<_ResultBody> {
                                 direction: Axis.horizontal,
                                 children: [
                                   Expanded(
-                                    child: _nutrientBox(
+                                    child: nutrientBox(
                                       '🔥',
                                       response.calories.toString(),
                                       'Calories (kcal)',
@@ -185,7 +138,7 @@ class _ResultBodyState extends State<_ResultBody> {
                                     ),
                                   ),
                                   Expanded(
-                                    child: _nutrientBox(
+                                    child: nutrientBox(
                                       '💪',
                                       response.protein.toString(),
                                       'Protein',
@@ -199,7 +152,7 @@ class _ResultBodyState extends State<_ResultBody> {
                                 direction: Axis.horizontal,
                                 children: [
                                   Expanded(
-                                    child: _nutrientBox(
+                                    child: nutrientBox(
                                       '🥐',
                                       response.carbs.toString(),
                                       'Carbs',
@@ -207,7 +160,7 @@ class _ResultBodyState extends State<_ResultBody> {
                                     ),
                                   ),
                                   Expanded(
-                                    child: _nutrientBox(
+                                    child: nutrientBox(
                                       '💧',
                                       response.fat.toString(),
                                       'Total Fats',
@@ -225,13 +178,6 @@ class _ResultBodyState extends State<_ResultBody> {
                 ),
 
                 const SizedBox(height: 32),
-                Text(
-                  'Reference and Similar Meals',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(color: Colors.black54),
-                ),
-                const SizedBox(height: 12),
 
                 Consumer<ReferenceMealProvider>(
                   builder: (context, provider, _) {
@@ -241,51 +187,63 @@ class _ResultBodyState extends State<_ResultBody> {
 
                     if (provider.errorMessage != null) {
                       return Center(
-                        child: Text('Error: ${provider.errorMessage}'),
+                        child: Text('failed to load reference meals'),
                       );
                     }
 
                     final meals = provider.mealsResponse?.meals;
                     if (meals == null || meals.isEmpty) {
-                      return const Center(child: Text('Tidak ada hasil'));
+                      return SizedBox.shrink();
                     }
 
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: meals.length > 2 ? 2 : meals.length,
-                      itemBuilder: (context, index) {
-                        final meal = meals[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        ReferenceDetailPage(data: meal),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Reference and Similar Meals',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(color: Colors.black54),
+                        ),
+                        const SizedBox(height: 12),
+
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: meals.length > 2 ? 2 : meals.length,
+                          itemBuilder: (context, index) {
+                            final meal = meals[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            ReferenceDetailPage(data: meal),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: ListTile(
+                                  leading: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.network(
+                                      meal.strMealThumb ?? '',
+                                      width: 60,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  title: Text(meal.strMeal),
+                                  subtitle: Text('click for details'),
+                                ),
                               ),
                             );
                           },
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: ListTile(
-                              leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Image.network(
-                                  meal.strMealThumb ?? '',
-                                  width: 60,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              title: Text(meal.strMeal),
-                              subtitle: Text('click for details'),
-                            ),
-                          ),
-                        );
-                      },
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -307,26 +265,4 @@ class _ResultBodyState extends State<_ResultBody> {
       ),
     );
   }
-}
-
-Widget _nutrientBox(String icon, String value, String label, Color color) {
-  return Container(
-    margin: const EdgeInsets.all(4),
-    padding: const EdgeInsets.symmetric(vertical: 12),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Column(
-      children: [
-        Text(icon, style: const TextStyle(fontSize: 24)),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12)),
-      ],
-    ),
-  );
 }

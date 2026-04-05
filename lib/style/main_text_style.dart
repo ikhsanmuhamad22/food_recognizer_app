@@ -98,7 +98,7 @@ class MainTextStyle {
   /// labelLarge Text Style
   static TextStyle labelLarge = manrope.copyWith(
     fontSize: 14,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w900,
     height: 1.71,
     letterSpacing: 1.3,
   );
@@ -106,7 +106,7 @@ class MainTextStyle {
   /// labelMedium Text Style
   static TextStyle labelMedium = manrope.copyWith(
     fontSize: 12,
-    fontWeight: FontWeight.w200,
+    fontWeight: FontWeight.w900,
     height: 1.4,
     letterSpacing: 1.3,
   );

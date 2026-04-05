@@ -126,6 +126,7 @@ class ImageClassificationService {
       isolateInference!.sendPort.send(isolateModel);
 
       var results = await responsePort.first;
+
       return results as Map<String, double>;
     } catch (e) {
       log('Error in inferenceImageFile: $e');

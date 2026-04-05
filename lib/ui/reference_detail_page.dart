@@ -42,7 +42,7 @@ class _ReferenceDetailBody extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(16)),
               child: Image.network(
-                data.strMealThumb ?? 'https://via.placeholder.com/150',
+                data.strMealThumb ?? 'No image available',
                 height: 300,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -90,10 +90,10 @@ class _ReferenceDetailBody extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ingredients',
+                            'INGREDIENTS',
                             style: Theme.of(
                               context,
-                            ).textTheme.titleMedium?.copyWith(
+                            ).textTheme.labelLarge?.copyWith(
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
@@ -127,10 +127,10 @@ class _ReferenceDetailBody extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Instructions to Cook',
+                            'INSTRUCTIONS TO COOK',
                             style: Theme.of(
                               context,
-                            ).textTheme.titleMedium?.copyWith(
+                            ).textTheme.labelLarge?.copyWith(
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
