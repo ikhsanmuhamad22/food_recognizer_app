@@ -29,12 +29,6 @@ class _HomePageState extends State<HomePage> {
           child: const _HomeBody(),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-        ],
-      ),
     );
   }
 }

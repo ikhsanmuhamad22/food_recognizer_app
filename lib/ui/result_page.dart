@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:food_recognition_app/provider/reference_meal_provider.dart';
 import 'package:food_recognition_app/service/gemini_service.dart';
+import 'package:food_recognition_app/ui/reference_detail_page.dart';
 import 'package:provider/provider.dart';
-import 'package:food_recognition_app/data/model/food_model.dart';
+import 'package:food_recognition_app/data/model/food.dart';
 import 'package:food_recognition_app/provider/image_classification_provider.dart';
 
 class ResultPage extends StatelessWidget {
@@ -60,6 +62,14 @@ class _ResultBodyState extends State<_ResultBody> {
             if (viewmodel.classifications.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Provider.of<ReferenceMealProvider>(
+                context,
+                listen: false,
+              ).fetchMeals(viewmodel.classifications.keys.first);
+            });
+
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +160,6 @@ class _ResultBodyState extends State<_ResultBody> {
                         viewmodel.classifications.keys.first,
                       ),
                       builder: (context, snapshot) {
-                        print("snapshot: $snapshot");
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const Center(
@@ -160,7 +169,6 @@ class _ResultBodyState extends State<_ResultBody> {
                           return Text('Error: ${snapshot.error}');
                         } else {
                           final Nutrition response = snapshot.data!;
-                          print("response: $response");
                           return Flex(
                             direction: Axis.vertical,
                             children: [
@@ -215,6 +223,73 @@ class _ResultBodyState extends State<_ResultBody> {
                     );
                   },
                 ),
+
+                const SizedBox(height: 32),
+                Text(
+                  'Reference and Similar Meals',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(color: Colors.black54),
+                ),
+                const SizedBox(height: 12),
+
+                Consumer<ReferenceMealProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (provider.errorMessage != null) {
+                      return Center(
+                        child: Text('Error: ${provider.errorMessage}'),
+                      );
+                    }
+
+                    final meals = provider.mealsResponse?.meals;
+                    if (meals == null || meals.isEmpty) {
+                      return const Center(child: Text('Tidak ada hasil'));
+                    }
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: meals.length > 2 ? 2 : meals.length,
+                      itemBuilder: (context, index) {
+                        final meal = meals[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        ReferenceDetailPage(data: meal),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ListTile(
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.network(
+                                  meal.strMealThumb ?? '',
+                                  width: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Text(meal.strMeal),
+                              subtitle: Text('click for details'),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+
                 SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(

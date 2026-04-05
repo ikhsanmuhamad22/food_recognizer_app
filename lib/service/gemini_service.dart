@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:food_recognition_app/data/model/food_model.dart';
+import 'package:food_recognition_app/data/model/food.dart';
 import 'package:food_recognition_app/env/env.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
