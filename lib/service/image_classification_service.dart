@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:food_recognition_app/service/firebase_ml_service.dart';
 import 'package:food_recognition_app/service/isolate_interface.dart';
@@ -57,42 +56,6 @@ class ImageClassificationService {
     } catch (e) {
       _isInitialized = false;
       log('Failed to initialize ImageClassificationService: $e');
-      rethrow;
-    }
-  }
-
-  Future<Map<String, double>> inferenceCameraFrame(
-    CameraImage cameraImage,
-  ) async {
-    try {
-      if (!_isInitialized) {
-        throw Exception(
-          'ImageClassificationService not initialized. Call initHelper() first.',
-        );
-      }
-      assert(labels != null, 'Labels must be loaded');
-      assert(interpreter != null, 'Interpreter must be loaded');
-      assert(inputTensor != null, 'Input tensor must be loaded');
-      assert(outputTensor != null, 'Output tensor must be loaded');
-      assert(isolateInference != null, 'Isolate inference must be loaded');
-
-      var isolateModel = InferenceModel(
-        cameraImage,
-        interpreter!.address,
-        labels!,
-        inputTensor!.shape,
-        outputTensor!.shape,
-      );
-
-      ReceivePort responsePort = ReceivePort();
-      isolateModel.responsePort = responsePort.sendPort;
-      isolateInference!.sendPort.send(isolateModel);
-
-      // get inference result.
-      var results = await responsePort.first;
-      return results as Map<String, double>;
-    } catch (e) {
-      log('Error in inferenceCameraFrame: $e');
       rethrow;
     }
   }
