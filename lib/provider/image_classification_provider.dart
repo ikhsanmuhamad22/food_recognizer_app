@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import 'package:food_recognition_app/service/image_classification_service.dart';
 
@@ -33,14 +32,6 @@ class ImageClassificationViewmodel extends ChangeNotifier {
         .reversed
         .take(3),
   );
-
-  Future<void> runClassification(CameraImage camera) async {
-    if (!_isInitialized) {
-      await _initialize();
-    }
-    _classifications = await _service.inferenceCameraFrame(camera);
-    notifyListeners();
-  }
 
   Future<void> runClassificationFromPath(String imagePath) async {
     if (!_isInitialized) {
